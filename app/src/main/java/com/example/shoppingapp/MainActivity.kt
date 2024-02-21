@@ -5,14 +5,22 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Tag
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var recyclerView: RecyclerView
+    lateinit var myAdapter: MyAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        recyclerView= findViewById <RecyclerView>(R.id.recyclerView)
+
 
         val retrofitBuilder= Retrofit.Builder()
             .baseUrl("https://dummyjson.com")
@@ -28,10 +36,14 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<MyData?>, response: Response<MyData?>) {
                 //What you want to do when API call is a success
                 var responseBody= response.body()
-                val productArray=responseBody?.products
+                val productArray=responseBody?.products!!
 
                 val tvProduct = findViewById<TextView>(R.id.tvName)
                 tvProduct.text=productArray.toString()
+
+                myAdapter= MyAdapter(this@MainActivity, productArray)
+                recyclerView.adapter= myAdapter
+                recyclerView.layoutManager= LinearLayoutManager(this@MainActivity)
 
             }
 
